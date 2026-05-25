@@ -1,4 +1,4 @@
-package com.example.shoppingcartapp.ui.home
+package com.example.shoppingcartapp.ui.cart
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,14 +9,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class HomeViewModel(
+
+class CartViewModel(
     itemsRepository: ItemsRepository
 ) : ViewModel() {
-    val uiState: StateFlow<HomeUiState> = itemsRepository.getAllItemsStream().map { HomeUiState(it) }
+    val uiState: StateFlow<CartUiState> = itemsRepository.getAllItemsStream().map { CartUiState(it) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-            initialValue = HomeUiState()
+            initialValue = CartUiState()
         )
 
     companion object {
@@ -24,4 +25,4 @@ class HomeViewModel(
     }
 }
 
-data class HomeUiState(val itemList: List<Item> = listOf())
+data class CartUiState(val itemList: List<Item> = listOf())

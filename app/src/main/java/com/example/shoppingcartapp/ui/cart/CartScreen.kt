@@ -1,4 +1,4 @@
-package com.example.shoppingcartapp.ui.home
+package com.example.shoppingcartapp.ui.cart
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,26 +25,27 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shoppingcartapp.R
 import com.example.shoppingcartapp.data.Item
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+fun CartScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: CartViewModel = viewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    val homeUiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val cartUiState = viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            HomeScreenTopBar(
+            CartScreenTopBar(
                 scrollBehavior = scrollBehavior
             )
         }
     ) { innerPadding ->
-        HomeItemList(
-            items = homeUiState.value.itemList,
+        CartItemList(
+            items = cartUiState.value.itemList,
             modifier = Modifier,
             contentPadding = innerPadding
         )
@@ -53,14 +54,14 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenTopBar(
+fun CartScreenTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
     CenterAlignedTopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.all_products)
+                text = stringResource(R.string.cart)
             )
         },
         scrollBehavior = scrollBehavior,
@@ -69,7 +70,7 @@ fun HomeScreenTopBar(
 }
 
 @Composable
-fun HomeItemList(
+fun CartItemList(
     items: List<Item>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
@@ -80,7 +81,7 @@ fun HomeItemList(
         modifier = modifier
     ) {
         items(items = items, key = { it.id }) { item ->
-            HomeItemCard(
+            CartItemCard(
                 item = item,
                 modifier = Modifier
             )
@@ -89,7 +90,7 @@ fun HomeItemList(
 }
 
 @Composable
-fun HomeItemCard(
+fun CartItemCard(
     item: Item,
     modifier: Modifier = Modifier
 ) {
