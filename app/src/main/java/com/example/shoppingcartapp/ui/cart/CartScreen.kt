@@ -20,8 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shoppingcartapp.R
 import com.example.shoppingcartapp.data.Item
 
@@ -30,7 +30,7 @@ import com.example.shoppingcartapp.data.Item
 @Composable
 fun CartScreen(
     modifier: Modifier = Modifier,
-    viewModel: CartViewModel = viewModel()
+    viewModel: CartViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 

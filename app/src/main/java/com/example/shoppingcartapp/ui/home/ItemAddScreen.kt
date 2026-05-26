@@ -4,12 +4,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun ItemAddScreen(
     modifier: Modifier = Modifier,
-    viewModel: ItemAddViewModel = viewModel()
+    viewModel: ItemAddViewModel = hiltViewModel()
 ) {
     val uiState = viewModel.uiState.collectAsState()
 

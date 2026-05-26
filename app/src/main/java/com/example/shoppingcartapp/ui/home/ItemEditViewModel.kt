@@ -3,11 +3,14 @@ package com.example.shoppingcartapp.ui.home
 import androidx.lifecycle.ViewModel
 import com.example.shoppingcartapp.data.ItemsRepository
 import com.example.shoppingcartapp.ui.cart.ItemDetailsUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class ItemEditViewModel(
+@HiltViewModel
+class ItemEditViewModel @Inject constructor(
     private val itemsRepository: ItemsRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ItemDetailsUiState())

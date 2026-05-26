@@ -1,8 +1,9 @@
 package com.example.shoppingcartapp.data
 
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class LocalDbItemRepository(
+class LocalDbItemRepository @Inject constructor(
     private val dao: ItemDao
 ) : ItemsRepository {
     override fun getAllItemsStream(): Flow<List<Item>> = dao.getAllItems()
