@@ -19,7 +19,7 @@ import com.example.shoppingcartapp.ui.home.MainItemEditDestination
 import com.example.shoppingcartapp.ui.home.MainItemEditScreen
 
 @Composable
-fun InventoryNavHost(
+fun CartNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
@@ -42,7 +42,7 @@ fun InventoryNavHost(
             )
         }
         composable(
-            route = MainItemDetailsDestination.route,
+            route = MainItemDetailsDestination.routeWithArgs,
             arguments = listOf(navArgument(MainItemDetailsDestination.itemIdArg) {
                 type = NavType.IntType
             })
@@ -53,7 +53,7 @@ fun InventoryNavHost(
             )
         }
         composable(
-            route = MainItemEditDestination.route,
+            route = MainItemEditDestination.routeWithArgs,
             arguments = listOf(navArgument(MainItemEditDestination.itemIdArg) {
                 type = NavType.IntType
             })
@@ -74,7 +74,7 @@ fun InventoryNavHost(
             )
         }
         composable(
-            route = CartItemDetailsDestination.route,
+            route = CartItemDetailsDestination.routeWithArgs,
             arguments = listOf(navArgument(CartItemDetailsDestination.itemIdArg) {
                 type = NavType.IntType
             })

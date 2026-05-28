@@ -1,9 +1,11 @@
 package com.example.shoppingcartapp
 
 import androidx.compose.runtime.Composable
-import com.example.shoppingcartapp.ui.home.HomeScreen
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.shoppingcartapp.ui.navigation.CartNavHost
 
 @Composable
-fun ShoppingCartApp() {
-    HomeScreen()
+fun ShoppingCartApp(navController: NavHostController = rememberNavController()) {
+    CartNavHost(navController = navController)
 }
