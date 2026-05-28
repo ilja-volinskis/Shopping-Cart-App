@@ -1,10 +1,11 @@
-package com.example.shoppingcartapp.ui.home
+package com.example.shoppingcartapp.ui.cart
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shoppingcartapp.data.Item
 import com.example.shoppingcartapp.data.ItemsRepository
+import com.example.shoppingcartapp.ui.home.ItemUiState
+import com.example.shoppingcartapp.ui.home.toItemDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,11 +15,11 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-class ItemEditViewModel @Inject constructor(
+class CartItemDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val itemsRepository: ItemsRepository
 ) : ViewModel() {
-    private val itemId: Int = checkNotNull(savedStateHandle[MainItemEditDestination.itemIdArg])
+    private val itemId: Int = checkNotNull(savedStateHandle[CartItemDetailsDestination.itemIdArg])
 
     val uiState: StateFlow<ItemUiState> = itemsRepository
         .getItemStream(itemId)
@@ -35,13 +36,3 @@ class ItemEditViewModel @Inject constructor(
         private const val TIMEOUT_MILLIS = 5_000L
     }
 }
-
-data class ItemEditUiState(
-    val itemDetails: ItemDetails = ItemDetails(),
-    val isEntryValid: Boolean = false
-)
-
-fun Item.toItemEditUiState(isEntryValid: Boolean = false): ItemEditUiState = ItemEditUiState(
-    itemDetails = this.toItemDetails(),
-    isEntryValid = isEntryValid
-)
