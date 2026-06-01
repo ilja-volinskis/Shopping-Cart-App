@@ -22,6 +22,10 @@ class HomeViewModel @Inject constructor(
             initialValue = HomeUiState()
         )
 
+    fun addItemToCart(item: Item) {
+
+    }
+
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }

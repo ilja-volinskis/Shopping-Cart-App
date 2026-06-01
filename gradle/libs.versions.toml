@@ -17,6 +17,8 @@ hiltLifecycleViewmodelCompose = "1.3.0"
 hiltNavigationCompose = "1.3.0"
 
 [libraries]
+androidx-compose-material = { module = "androidx.compose.material:material" }
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
