@@ -24,12 +24,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.shoppingcartapp.R
 import com.example.shoppingcartapp.data.Item
-import com.example.shoppingcartapp.ui.navigation.NavDestination
-
-object HomeDestination : NavDestination {
-    override val route = "home"
-    override val titleRes = R.string.app_name
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

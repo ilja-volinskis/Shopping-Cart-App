@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shoppingcartapp.data.Item
 import com.example.shoppingcartapp.data.ItemsRepository
+import com.example.shoppingcartapp.ui.navigation.MainItemDetailsDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

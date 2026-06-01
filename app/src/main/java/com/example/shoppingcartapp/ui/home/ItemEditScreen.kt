@@ -2,18 +2,10 @@ package com.example.shoppingcartapp.ui.home
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.shoppingcartapp.R
-import com.example.shoppingcartapp.ui.navigation.NavDestination
-
-object MainItemEditDestination : NavDestination {
-    override val route = "main_item_edit"
-    override val titleRes = R.string.main_item_edit_screen_title
-    const val itemIdArg = "itemId"
-    val routeWithArgs = "$route/{$itemIdArg}"
-}
 
 @Composable
 fun MainItemEditScreen(
@@ -22,7 +14,7 @@ fun MainItemEditScreen(
     modifier: Modifier = Modifier,
     viewModel: ItemEditViewModel = hiltViewModel()
 ) {
-    val uiState = viewModel.uiState.collectAsState()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
     Text(
         text = "Item Edit Screen"

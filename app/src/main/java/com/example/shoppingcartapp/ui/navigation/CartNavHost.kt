@@ -7,15 +7,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.shoppingcartapp.ui.cart.CartDestination
-import com.example.shoppingcartapp.ui.cart.CartItemDetailsDestination
 import com.example.shoppingcartapp.ui.cart.CartItemDetailsScreen
 import com.example.shoppingcartapp.ui.cart.CartScreen
-import com.example.shoppingcartapp.ui.home.HomeDestination
 import com.example.shoppingcartapp.ui.home.HomeScreen
-import com.example.shoppingcartapp.ui.home.MainItemDetailsDestination
 import com.example.shoppingcartapp.ui.home.MainItemDetailsScreen
-import com.example.shoppingcartapp.ui.home.MainItemEditDestination
 import com.example.shoppingcartapp.ui.home.MainItemEditScreen
 
 @Composable
