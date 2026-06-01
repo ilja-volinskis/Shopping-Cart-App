@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.shoppingcartapp.CartAppTopBar
 import com.example.shoppingcartapp.R
 import com.example.shoppingcartapp.data.Item
 
@@ -60,8 +61,10 @@ fun HomeScreen(
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            HomeScreenTopBar(
-                scrollBehavior = scrollBehavior
+            CartAppTopBar(
+                title = stringResource(R.string.all_products),
+                scrollBehavior = scrollBehavior,
+                canNavigateBack = false
             )
         },
         floatingActionButton = {
@@ -84,23 +87,6 @@ fun HomeScreen(
             contentPadding = innerPadding
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HomeScreenTopBar(
-    scrollBehavior: TopAppBarScrollBehavior,
-    modifier: Modifier = Modifier,
-) {
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                text = stringResource(R.string.all_products)
-            )
-        },
-        scrollBehavior = scrollBehavior,
-        modifier = modifier
-    )
 }
 
 @Composable
