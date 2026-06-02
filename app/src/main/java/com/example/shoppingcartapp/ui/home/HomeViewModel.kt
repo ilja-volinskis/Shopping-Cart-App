@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    itemsRepository: ItemsRepository
+    private val itemsRepository: ItemsRepository
 ) : ViewModel() {
     val uiState: StateFlow<HomeUiState> = itemsRepository.getAllItemsStream().map { HomeUiState(it) }
         .stateIn(

@@ -65,7 +65,7 @@ fun CartNavHost(
                     navController.navigate("${CartItemDetailsDestination.route}/${it}")
                 },
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() }
+                navigateUp = { navController.navigateUp() }
             )
         }
         composable(
