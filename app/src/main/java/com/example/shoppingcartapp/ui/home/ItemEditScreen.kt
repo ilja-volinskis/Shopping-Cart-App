@@ -14,7 +14,7 @@ fun MainItemEditScreen(
     modifier: Modifier = Modifier,
     viewModel: ItemEditViewModel = hiltViewModel()
 ) {
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState = viewModel.uiState
 
     Text(
         text = "Item Edit Screen"

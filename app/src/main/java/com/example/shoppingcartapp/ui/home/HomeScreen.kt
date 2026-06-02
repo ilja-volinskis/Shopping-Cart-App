@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -78,7 +80,8 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
-        HomeItemList(
+        HomeBody(
+            openNewItemScreen = navigateToItemEdit,
             addItemToCart = viewModel::addItemToCart,
             items = homeUiState.value.itemList,
             modifier = Modifier,
@@ -88,15 +91,71 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeItemList(
+fun HomeBody(
+    openNewItemScreen: (Int) -> Unit,
     addItemToCart: (Item) -> Unit,
     items: List<Item>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
+    Column(
+        modifier = modifier
+            .padding(contentPadding),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HomeItemList(
+            addItemToCart = addItemToCart,
+            items = items,
+            modifier = Modifier,
+        )
+
+        // pass -1 to item screen, so it knows you create new item
+        AppButton(
+            text = stringResource(R.string.add),
+            onClick = { openNewItemScreen(-1) },
+            modifier = Modifier
+                .padding(top = 16.dp)
+        )
+    }
+}
+
+@Composable
+fun AppButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .width(200.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        ),
+        shape = MaterialTheme.shapes.medium,
+        border = BorderStroke(
+            width = 2.dp,
+            color = MaterialTheme.colorScheme.onPrimary
+        ),
+        contentPadding = PaddingValues(12.dp)
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun HomeItemList(
+    addItemToCart: (Item) -> Unit,
+    items: List<Item>,
+    modifier: Modifier = Modifier,
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
-        contentPadding = contentPadding,
         modifier = modifier
     ) {
         items(items = items, key = { it.id }) { item ->
