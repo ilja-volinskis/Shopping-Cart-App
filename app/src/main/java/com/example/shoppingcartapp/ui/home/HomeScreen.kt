@@ -45,7 +45,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.shoppingcartapp.CartAppTopBar
 import com.example.shoppingcartapp.R
 import com.example.shoppingcartapp.data.Item
-import com.example.shoppingcartapp.ui.cart.CartViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
