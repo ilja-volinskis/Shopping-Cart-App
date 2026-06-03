@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -66,6 +67,7 @@ fun CartScreen(
         }
     ) { innerPadding ->
         CartBody(
+            navigateToItemDetails = navigateToItemDetails,
             totalPrice = cartUiState.value.totalPrice,
             items = cartUiState.value.cartItems,
             modifier = Modifier,
@@ -76,6 +78,7 @@ fun CartScreen(
 
 @Composable
 fun CartBody(
+    navigateToItemDetails: (Int) -> Unit,
     totalPrice: Double,
     items: List<Item>,
     modifier: Modifier = Modifier,
@@ -86,6 +89,7 @@ fun CartBody(
             .padding(contentPadding)
     ) {
         CartItemList(
+            navigateToItemDetails = navigateToItemDetails,
             items = items,
             modifier = Modifier
                 .fillMaxSize()
@@ -132,6 +136,7 @@ fun TotalPriceDisplay(
 
 @Composable
 fun CartItemList(
+    navigateToItemDetails: (Int) -> Unit,
     items: List<Item>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
@@ -143,6 +148,7 @@ fun CartItemList(
     ) {
         items(items = items, key = { it.id }) { item ->
             CartItemCard(
+                navigateToItemDetails = navigateToItemDetails,
                 item = item,
                 modifier = Modifier
                     .padding(horizontal = 12.dp, vertical = 4.dp)
@@ -154,6 +160,7 @@ fun CartItemList(
 
 @Composable
 fun CartItemCard(
+    navigateToItemDetails: (Int) -> Unit,
     item: Item,
     modifier: Modifier = Modifier
 ) {
@@ -168,7 +175,8 @@ fun CartItemCard(
     ) {
         Row (
             modifier = Modifier
-                .fillMaxHeight(),
+                .fillMaxHeight()
+                .clickable { navigateToItemDetails(item.id) },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(

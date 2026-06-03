@@ -2,6 +2,7 @@ package com.example.shoppingcartapp.ui.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -44,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.shoppingcartapp.CartAppTopBar
 import com.example.shoppingcartapp.R
 import com.example.shoppingcartapp.data.Item
+import com.example.shoppingcartapp.ui.cart.CartViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,7 +83,8 @@ fun HomeScreen(
         }
     ) { innerPadding ->
         HomeBody(
-            openNewItemScreen = navigateToItemEdit,
+            navigateToItemDetails = navigateToItemDetails,
+            openNewItemScreen = { navigateToItemEdit(-1) }, // -1 is: create new item
             addItemToCart = viewModel::addItemToCart,
             items = homeUiState.value.itemList,
             modifier = Modifier,
@@ -92,7 +95,8 @@ fun HomeScreen(
 
 @Composable
 fun HomeBody(
-    openNewItemScreen: (Int) -> Unit,
+    navigateToItemDetails: (Int) -> Unit,
+    openNewItemScreen: () -> Unit,
     addItemToCart: (Item) -> Unit,
     items: List<Item>,
     modifier: Modifier = Modifier,
@@ -104,15 +108,15 @@ fun HomeBody(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         HomeItemList(
+            navigateToItemDetails = navigateToItemDetails,
             addItemToCart = addItemToCart,
             items = items,
             modifier = Modifier,
         )
 
-        // pass -1 to item screen, so it knows you create new item
         AppButton(
             text = stringResource(R.string.add),
-            onClick = { openNewItemScreen(-1) },
+            onClick = { openNewItemScreen() },
             modifier = Modifier
                 .padding(top = 16.dp)
         )
@@ -150,6 +154,7 @@ fun AppButton(
 
 @Composable
 fun HomeItemList(
+    navigateToItemDetails: (Int) -> Unit,
     addItemToCart: (Item) -> Unit,
     items: List<Item>,
     modifier: Modifier = Modifier,
@@ -160,6 +165,7 @@ fun HomeItemList(
     ) {
         items(items = items, key = { it.id }) { item ->
             HomeItemCard(
+                navigateToItemDetails = navigateToItemDetails,
                 addItemToCart = addItemToCart,
                 item = item,
                 modifier = Modifier
@@ -171,6 +177,7 @@ fun HomeItemList(
 
 @Composable
 fun HomeItemCard(
+    navigateToItemDetails: (Int) -> Unit,
     addItemToCart: (Item) -> Unit,
     item: Item,
     modifier: Modifier = Modifier
@@ -186,7 +193,8 @@ fun HomeItemCard(
     ) {
         Row (
             modifier = Modifier
-                .fillMaxHeight(),
+                .fillMaxHeight()
+                .clickable { navigateToItemDetails(item.id) },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
