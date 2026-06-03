@@ -25,6 +25,10 @@ class CartRepository(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun addToCart(item: Item) {
+        if(item.quantity < 1) {
+            return
+        }
+
         dataStore.edit { preferences ->
             val current = (preferences[CART_KEY] ?: "")
                 .takeIf { it.isNotEmpty() }
@@ -34,7 +38,9 @@ class CartRepository(private val dataStore: DataStore<Preferences>) {
             val existingIndex = current.indexOfFirst { it.id == item.id }
             if (existingIndex >= 0) {
                 val existing = current[existingIndex]
-                current[existingIndex] = existing.copy(quantity = existing.quantity + 1)
+                if(existing.quantity < item.quantity) {
+                    current[existingIndex] = existing.copy(quantity = existing.quantity + 1)
+                }
             } else {
                 current.add(item.copy(quantity = 1))
             }
