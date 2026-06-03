@@ -1,6 +1,11 @@
 package com.example.shoppingcartapp.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStoreFile
+import com.example.shoppingcartapp.data.CartRepository
 import com.example.shoppingcartapp.data.ItemDao
 import com.example.shoppingcartapp.data.ItemsRepository
 import com.example.shoppingcartapp.data.LocalDbItemRepository
@@ -30,4 +35,18 @@ object DataModule {
     fun provideItemsRepository(dao: ItemDao): ItemsRepository =
         LocalDbItemRepository(dao)
 
+
+    @Provides
+    @Singleton
+    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+        return PreferenceDataStoreFactory.create(
+            produceFile = { context.preferencesDataStoreFile("cart") }
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartRepository(dataStore: DataStore<Preferences>): CartRepository {
+        return CartRepository(dataStore)
+    }
 }
