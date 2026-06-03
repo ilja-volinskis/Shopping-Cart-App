@@ -1,5 +1,6 @@
 package com.example.shoppingcartapp.ui.cart
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -54,6 +55,8 @@ fun CartScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val cartUiState = viewModel.uiState.collectAsStateWithLifecycle()
+
+    Log.d("Cart", "${cartUiState.value.cartItems}")
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
