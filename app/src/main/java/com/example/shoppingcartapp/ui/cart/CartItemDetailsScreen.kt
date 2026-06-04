@@ -63,7 +63,10 @@ fun CartItemDetailsScreen(
         CartItemDetailsBody(
             outOfStock = uiState.value.outOfStock,
             itemDetails = uiState.value.itemDetails,
-            removeFromCart = viewModel::removeItemFromCart,
+            removeFromCart = {
+                viewModel.removeItemFromCart(it)
+                navigateUp()
+            },
             modifier = Modifier,
             contentPadding = innerPadding
         )
