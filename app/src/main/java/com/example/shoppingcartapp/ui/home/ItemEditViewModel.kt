@@ -12,49 +12,69 @@ import com.example.shoppingcartapp.data.ItemsRepository
 import com.example.shoppingcartapp.ui.navigation.MainItemDetailsDestination
 import com.example.shoppingcartapp.ui.navigation.MainItemEditDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ItemEditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val itemsRepository: ItemsRepository
 ) : ViewModel() {
-    private val itemId: Int = checkNotNull(savedStateHandle[MainItemDetailsDestination.itemIdArg])
+    private val initialItemId: Int = checkNotNull(savedStateHandle[MainItemDetailsDestination.itemIdArg])
+    private val currentItemId = MutableStateFlow(initialItemId)
+
+    val uiState: MutableStateFlow<ItemEditUiState> = MutableStateFlow(ItemEditUiState())
 
     // if itemId < 0 we know we are creating a new item
-    val uiState: StateFlow<ItemEditUiState> =
-        (
-            if(itemId < 0)
-                flowOf(ItemEditUiState())
-             else
-                itemsRepository
-                    .getItemStream(itemId)
-                    .filterNotNull()
-                    .map {
-                        ItemEditUiState(
-                            itemDetails = it.toItemDetails(),
-                            isEntryValid = false,
-                            isEditingEntry = true
-                        )
-                    }
-        ).stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-            initialValue = ItemEditUiState()
+    init {
+        viewModelScope.launch {
+            currentItemId.flatMapLatest { itemId ->
+                if(itemId < 0) {
+                    flowOf(ItemEditUiState())
+                } else {
+                    itemsRepository
+                        .getItemStream(itemId)
+                        .map { item ->
+                            if (item != null) {
+                                ItemEditUiState(
+                                    itemDetails = item.toItemDetails(),
+                                    isEntryValid = validateInput(item.toItemDetails()),
+                                    isEditingEntry = true
+                                )
+                            } else {
+                                ItemEditUiState()
+                            }
+                        }
+                }
+            }.collect {
+                uiState.value = it
+            }
+        }
+    }
+
+    fun updateItemDetails(itemDetails: ItemDetails) {
+        uiState.value = uiState.value.copy(
+            itemDetails = itemDetails,
+            isEntryValid = validateInput(itemDetails)
         )
+    }
 
     fun insertItem(item: Item) {
         viewModelScope.launch {
-            itemsRepository.insertItem(item)
+            val newItemId = itemsRepository.insertItem(item)
+            currentItemId.value = newItemId.toInt()
         }
     }
 
@@ -67,6 +87,13 @@ class ItemEditViewModel @Inject constructor(
     fun deleteItem(item: Item) {
         viewModelScope.launch {
             itemsRepository.deleteItem(item)
+            currentItemId.value = -1
+        }
+    }
+
+    private fun validateInput(itemUiState: ItemDetails = uiState.value.itemDetails): Boolean {
+        return with(itemUiState) {
+            name.isNotBlank() && price.isNotBlank() && quantity.isNotBlank()
         }
     }
 

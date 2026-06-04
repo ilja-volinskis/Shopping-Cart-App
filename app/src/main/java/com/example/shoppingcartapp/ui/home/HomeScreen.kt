@@ -148,9 +148,11 @@ fun HomeBody(
 fun AppButton(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     Button(
+        enabled = enabled,
         onClick = onClick,
         modifier = modifier
             .width(200.dp),
