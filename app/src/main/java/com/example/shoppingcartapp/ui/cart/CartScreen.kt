@@ -1,6 +1,7 @@
 package com.example.shoppingcartapp.ui.cart
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -51,6 +52,10 @@ fun CartScreen(
     modifier: Modifier = Modifier,
     viewModel: CartViewModel = hiltViewModel()
 ) {
+    BackHandler {
+        navigateBack()
+    }
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val cartUiState = viewModel.uiState.collectAsStateWithLifecycle()

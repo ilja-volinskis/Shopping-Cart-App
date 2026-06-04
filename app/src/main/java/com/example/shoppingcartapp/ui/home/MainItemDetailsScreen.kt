@@ -1,5 +1,6 @@
 package com.example.shoppingcartapp.ui.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,10 @@ fun MainItemDetailsScreen(
     modifier: Modifier = Modifier,
     viewModel: MainItemDetailsViewModel = hiltViewModel()
 ) {
+    BackHandler {
+        navigateBack()
+    }
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
