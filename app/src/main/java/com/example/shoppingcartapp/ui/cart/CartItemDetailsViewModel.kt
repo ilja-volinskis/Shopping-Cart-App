@@ -4,11 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shoppingcartapp.data.CartRepository
-import com.example.shoppingcartapp.data.Item
 import com.example.shoppingcartapp.data.ItemsRepository
 import com.example.shoppingcartapp.ui.home.ItemUiState
 import com.example.shoppingcartapp.ui.home.toItemDetails
-import com.example.shoppingcartapp.ui.navigation.CartItemDetailsDestination
 import com.example.shoppingcartapp.ui.navigation.MainItemDetailsDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
