@@ -19,4 +19,8 @@
     <string name="edit">Edit</string>
     <string name="remove">Remove</string>
     <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="insert">Insert</string>
+    <string name="name">Name</string>
+    <string name="description">Description</string>
 </resources>

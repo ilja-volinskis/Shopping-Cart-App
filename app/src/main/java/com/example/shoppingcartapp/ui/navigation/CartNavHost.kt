@@ -59,7 +59,7 @@ fun CartNavHost(
         ) {
             MainItemEditScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() }
+                navigateUp = { navController.navigateUp() }
             )
         }
 
