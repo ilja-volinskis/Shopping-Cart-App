@@ -9,6 +9,7 @@ import com.example.shoppingcartapp.data.CartRepository
 import com.example.shoppingcartapp.data.ItemDao
 import com.example.shoppingcartapp.data.ItemsRepository
 import com.example.shoppingcartapp.data.LocalDbItemRepository
+import com.example.shoppingcartapp.data.PREFERENCE_NAME
 import com.example.shoppingcartapp.data.ShoppingCartDatabase
 import dagger.Module
 import dagger.Provides
@@ -40,7 +41,7 @@ object DataModule {
     @Singleton
     fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return PreferenceDataStoreFactory.create(
-            produceFile = { context.preferencesDataStoreFile("cart") }
+            produceFile = { context.preferencesDataStoreFile(PREFERENCE_NAME) }
         )
     }
 

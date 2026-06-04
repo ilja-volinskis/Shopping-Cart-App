@@ -1,6 +1,5 @@
 package com.example.shoppingcartapp.ui.cart
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

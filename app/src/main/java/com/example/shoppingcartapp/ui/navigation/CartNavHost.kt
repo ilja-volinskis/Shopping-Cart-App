@@ -44,7 +44,7 @@ fun CartNavHost(
         ) {
             MainItemDetailsScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() }
+                navigateUp = { navController.navigateUp() }
             )
         }
         composable(
