@@ -76,7 +76,7 @@ fun CartNavHost(
         ) {
             CartItemDetailsScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() }
+                navigateUp = { navController.navigateUp() }
             )
         }
     }

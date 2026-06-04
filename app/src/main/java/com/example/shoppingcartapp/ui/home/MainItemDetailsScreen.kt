@@ -101,6 +101,8 @@ fun MainItemDetailsBody(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.Start
             ) {
+
+                // Description
                 OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -127,6 +129,7 @@ fun MainItemDetailsBody(
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
                 ) {
+                    // Price
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -148,6 +151,7 @@ fun MainItemDetailsBody(
 
                     Spacer(modifier = Modifier.height(4.dp))
 
+                    // In stock count
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),
