@@ -23,4 +23,6 @@
     <string name="insert">Insert</string>
     <string name="name">Name</string>
     <string name="description">Description</string>
+    <string name="decrease">Decrease</string>
+    <string name="increase">Increase</string>
 </resources>

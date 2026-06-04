@@ -49,6 +49,31 @@ class CartRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+
+    suspend fun updateItemCount(itemId: Int, count: Int) {
+        dataStore.edit { preferences ->
+            val current = (preferences[CART_KEY] ?: "")
+                .takeIf { it.isNotEmpty() }
+                ?.let { Json.decodeFromString<List<Item>>(it) }
+                ?.toMutableList() ?: mutableListOf()
+
+            val index = current.indexOfFirst { it.id == itemId }
+
+            if (index >= 0) {
+                if (count <= 0) {
+                    // Remove item if count is zero or negative
+                    current.removeAt(index)
+                } else {
+                    val existing = current[index]
+                    current[index] = existing.copy(quantity = count)
+                }
+            }
+
+            preferences[CART_KEY] = Json.encodeToString(current)
+        }
+    }
+
+
     suspend fun removeFromCart(itemId: Int) {
         dataStore.edit { preferences ->
             val current = (preferences[CART_KEY] ?: "")

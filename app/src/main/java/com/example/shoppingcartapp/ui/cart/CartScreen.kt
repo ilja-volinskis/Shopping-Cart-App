@@ -17,13 +17,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,12 +46,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.shoppingcartapp.CartAppTopBar
 import com.example.shoppingcartapp.R
 import com.example.shoppingcartapp.data.Item
+import com.example.shoppingcartapp.ui.home.AppSquareButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.ui.text.input.KeyboardType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +91,9 @@ fun CartScreen(
     ) { innerPadding ->
         CartBody(
             navigateToItemDetails = navigateToItemDetails,
+            setItemCount = { itemId: Int, count: Int ->
+                viewModel.setItemCount(itemId, count)
+            },
             totalPrice = cartUiState.value.totalPrice,
             items = cartUiState.value.cartItems,
             modifier = Modifier,
@@ -86,6 +105,7 @@ fun CartScreen(
 @Composable
 fun CartBody(
     navigateToItemDetails: (Int) -> Unit,
+    setItemCount: (Int, Int) -> Unit,
     totalPrice: Double,
     items: List<Item>,
     modifier: Modifier = Modifier,
@@ -97,6 +117,7 @@ fun CartBody(
     ) {
         CartItemList(
             navigateToItemDetails = navigateToItemDetails,
+            setItemCount = setItemCount,
             items = items,
             modifier = Modifier
                 .fillMaxSize()
@@ -144,6 +165,7 @@ fun TotalPriceDisplay(
 @Composable
 fun CartItemList(
     navigateToItemDetails: (Int) -> Unit,
+    setItemCount: (Int, Int) -> Unit,
     items: List<Item>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
@@ -156,6 +178,7 @@ fun CartItemList(
         items(items = items, key = { it.id }) { item ->
             CartItemCard(
                 navigateToItemDetails = navigateToItemDetails,
+                setItemCount = setItemCount,
                 item = item,
                 modifier = Modifier
                     .padding(horizontal = 12.dp, vertical = 4.dp)
@@ -168,6 +191,7 @@ fun CartItemList(
 @Composable
 fun CartItemCard(
     navigateToItemDetails: (Int) -> Unit,
+    setItemCount: (Int, Int) -> Unit,
     item: Item,
     modifier: Modifier = Modifier
 ) {
@@ -199,11 +223,15 @@ fun CartItemCard(
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
                     Text(
                         text = item.name,
                         style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = "$${item.price}",
@@ -214,7 +242,9 @@ fun CartItemCard(
                     Text(
                         text = item.description,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     val itemsLeftText = if (item.quantity == 0) stringResource(R.string.no_items_in_stock)
                     else "${item.quantity} left"
@@ -225,8 +255,46 @@ fun CartItemCard(
                     )
                 }
 
-                Spacer(Modifier.weight(1f))
+                Row(
+                    modifier = Modifier.padding(horizontal = 2.dp)
+                ) {
+                    AppSquareButton(
+                        onClick = { setItemCount(item.id, item.quantity - 1) },
+                        imageVector = Icons.Default.Remove,
+                        contentDescription = stringResource(R.string.decrease),
+                        modifier = Modifier,
+                    )
 
+                    OutlinedTextField(
+                        value = item.quantity.toString(),
+                        onValueChange = { newValue ->
+                            if (newValue.all { it.isDigit() }) {
+                                setItemCount(item.id, newValue.toInt())
+                            }
+                        },
+                        singleLine = true,
+                        textStyle = LocalTextStyle.current.copy(
+                            textAlign = TextAlign.Center
+                        ),
+                        modifier = modifier
+                            .width(48.dp)
+                            .height(36.dp),
+                        shape = MaterialTheme.shapes.small,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                            cursorColor = MaterialTheme.colorScheme.primary
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+
+                    AppSquareButton(
+                        onClick = { setItemCount(item.id, item.quantity + 1) },
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.increase),
+                        modifier = Modifier,
+                    )
+                }
             }
         }
     }

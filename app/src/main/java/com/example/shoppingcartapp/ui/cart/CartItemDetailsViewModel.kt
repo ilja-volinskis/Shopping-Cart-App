@@ -43,6 +43,12 @@ class CartItemDetailsViewModel @Inject constructor(
         initialValue = ItemUiState()
     )
 
+    fun setItemCountInCart(count: Int) {
+        viewModelScope.launch {
+            cartRepository.updateItemCount(itemId, count)
+        }
+    }
+
     fun removeItemFromCart(itemId: Int) {
         viewModelScope.launch {
             cartRepository.removeFromCart(itemId)
