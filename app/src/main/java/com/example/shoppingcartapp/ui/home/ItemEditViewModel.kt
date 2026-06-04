@@ -1,28 +1,18 @@
 package com.example.shoppingcartapp.ui.home
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shoppingcartapp.data.CartRepository
 import com.example.shoppingcartapp.data.Item
 import com.example.shoppingcartapp.data.ItemsRepository
 import com.example.shoppingcartapp.ui.navigation.MainItemDetailsDestination
-import com.example.shoppingcartapp.ui.navigation.MainItemEditDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -46,16 +36,13 @@ class ItemEditViewModel @Inject constructor(
                 } else {
                     itemsRepository
                         .getItemStream(itemId)
-                        .map { item ->
-                            if (item != null) {
-                                ItemEditUiState(
-                                    itemDetails = item.toItemDetails(),
-                                    isEntryValid = validateInput(item.toItemDetails()),
-                                    isEditingEntry = true
-                                )
-                            } else {
-                                ItemEditUiState()
-                            }
+                        .filterNotNull()
+                        .map {
+                            ItemEditUiState(
+                                itemDetails = it.toItemDetails(),
+                                isEntryValid = validateInput(it.toItemDetails()),
+                                isEditingEntry = true
+                            )
                         }
                 }
             }.collect {

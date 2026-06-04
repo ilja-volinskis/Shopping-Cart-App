@@ -2,10 +2,8 @@ package com.example.shoppingcartapp.ui.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -144,53 +141,28 @@ fun MainItemEditBody(
                         .padding(bottom = 16.dp)
                 ) {
                     // Price
-                    Row(
+                    OutlinedTextField(
+                        value = itemDetails.price,
+                        onValueChange = { onItemDetailsChange(itemDetails.copy(price = it)) },
+                        label = { Text(stringResource(R.string.price)) },
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.price),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
-                        OutlinedTextField(
-                            value = itemDetails.price,
-                            onValueChange = { onItemDetailsChange(itemDetails.copy(price = it)) },
-                            label = { Text(stringResource(R.string.price)) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                        )
-                    }
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                    )
 
                     Spacer(modifier = Modifier.height(4.dp))
 
                     // In cart count
-                    Row(
+                    OutlinedTextField(
+                        value = itemDetails.quantity,
+                        onValueChange = { onItemDetailsChange(itemDetails.copy(quantity = it)) },
+                        label = { Text(stringResource(R.string.in_stock)) },
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.in_stock),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        OutlinedTextField(
-                            value = itemDetails.quantity,
-                            onValueChange = { onItemDetailsChange(itemDetails.copy(quantity = it)) },
-                            label = { Text(stringResource(R.string.in_stock)) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                        )
-                    }
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
                 }
 
                 Column {
