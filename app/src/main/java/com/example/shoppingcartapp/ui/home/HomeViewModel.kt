@@ -31,6 +31,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun deleteItem(item: Item) {
+        viewModelScope.launch {
+            itemsRepository.deleteItem(item)
+        }
+    }
+
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }

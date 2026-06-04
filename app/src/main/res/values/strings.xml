@@ -15,4 +15,8 @@
     <string name="price">Price:</string>
     <string name="out_of_stock">Out of stock</string>
     <string name="remove_from_cart">Remove from cart</string>
+    <string name="toggle_admin">Toggle Admin</string>
+    <string name="edit">Edit</string>
+    <string name="remove">Remove</string>
+    <string name="delete">Delete</string>
 </resources>

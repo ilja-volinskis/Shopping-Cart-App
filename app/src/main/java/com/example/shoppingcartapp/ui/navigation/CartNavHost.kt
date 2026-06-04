@@ -16,6 +16,8 @@ import com.example.shoppingcartapp.ui.home.MainItemEditScreen
 @Composable
 fun CartNavHost(
     navController: NavHostController,
+    isAdmin: Boolean,
+    toggleAdmin: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -33,7 +35,9 @@ fun CartNavHost(
                 },
                 navigateToCart = {
                     navController.navigate(CartDestination.route)
-                }
+                },
+                isAdmin = isAdmin,
+                toggleAdmin = toggleAdmin
             )
         }
         composable(
