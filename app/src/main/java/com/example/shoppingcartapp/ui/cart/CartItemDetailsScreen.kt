@@ -105,6 +105,8 @@ fun CartItemDetailsBody(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.Start
             ) {
+
+                // Description
                 OutlinedCard(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -131,6 +133,7 @@ fun CartItemDetailsBody(
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
                 ) {
+                    // Price
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -152,6 +155,7 @@ fun CartItemDetailsBody(
 
                     Spacer(modifier = Modifier.height(4.dp))
 
+                    // In cart count
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),
