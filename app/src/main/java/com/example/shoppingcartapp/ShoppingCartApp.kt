@@ -11,13 +11,25 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.shoppingcartapp.ui.admin.AdminViewModel
 import com.example.shoppingcartapp.ui.navigation.CartNavHost
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
-fun ShoppingCartApp(navController: NavHostController = rememberNavController()) {
-    CartNavHost(navController = navController)
+fun ShoppingCartApp(
+    navController: NavHostController = rememberNavController(),
+    adminViewModel: AdminViewModel = hiltViewModel()
+) {
+    val isAdmin = adminViewModel.isAdmin.collectAsStateWithLifecycle()
+
+    CartNavHost(
+        navController = navController,
+        isAdmin = isAdmin.value,
+        toggleAdmin = adminViewModel::toggleAdminMode
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

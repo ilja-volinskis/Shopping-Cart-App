@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -34,17 +36,20 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.shoppingcartapp.CartAppTopBar
 import com.example.shoppingcartapp.R
 import com.example.shoppingcartapp.data.Item
+import com.example.shoppingcartapp.ui.admin.AdminToggleButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +57,9 @@ fun HomeScreen(
     navigateToItemDetails: (Int) -> Unit,
     navigateToItemEdit: (Int) -> Unit,
     navigateToCart: () -> Unit,
+    toggleAdmin: () -> Unit,
     modifier: Modifier = Modifier,
+    isAdmin: Boolean = false,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -69,15 +76,20 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = navigateToCart,
-                modifier = Modifier
-                    .padding(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = stringResource(R.string.open_cart)
+            Column {
+                AdminToggleButton(
+                    isAdmin = isAdmin,
+                    onClick = toggleAdmin
                 )
+                FloatingActionButton(
+                    onClick = navigateToCart,
+                    modifier = Modifier
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ShoppingCart,
+                        contentDescription = stringResource(R.string.open_cart)
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -86,8 +98,11 @@ fun HomeScreen(
             openNewItemScreen = { navigateToItemEdit(-1) }, // -1 is: create new item
             addItemToCart = viewModel::addItemToCart,
             items = homeUiState.value.itemList,
+            isAdmin = isAdmin,
             modifier = Modifier,
-            contentPadding = innerPadding
+            contentPadding = innerPadding,
+            navigateToItemEdit = navigateToItemEdit,
+            deleteItem = viewModel::deleteItem
         )
     }
 }
@@ -99,7 +114,10 @@ fun HomeBody(
     addItemToCart: (Item) -> Unit,
     items: List<Item>,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    isAdmin: Boolean = false,
+    navigateToItemEdit: (Int) -> Unit = {},
+    deleteItem: (Item) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -110,15 +128,20 @@ fun HomeBody(
             navigateToItemDetails = navigateToItemDetails,
             addItemToCart = addItemToCart,
             items = items,
+            isAdmin = isAdmin,
+            navigateToItemEdit = navigateToItemEdit,
+            deleteItem = deleteItem,
             modifier = Modifier,
         )
 
-        AppButton(
-            text = stringResource(R.string.add),
-            onClick = { openNewItemScreen() },
-            modifier = Modifier
-                .padding(top = 16.dp)
-        )
+        if(isAdmin) {
+            AppButton(
+                text = stringResource(R.string.add),
+                onClick = { openNewItemScreen() },
+                modifier = Modifier
+                    .padding(top = 16.dp)
+            )
+        }
     }
 }
 
@@ -157,6 +180,9 @@ fun HomeItemList(
     addItemToCart: (Item) -> Unit,
     items: List<Item>,
     modifier: Modifier = Modifier,
+    isAdmin: Boolean = false,
+    navigateToItemEdit: (Int) -> Unit = {},
+    deleteItem: (Item) -> Unit = {},
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
@@ -167,6 +193,9 @@ fun HomeItemList(
                 navigateToItemDetails = navigateToItemDetails,
                 addItemToCart = addItemToCart,
                 item = item,
+                isAdmin = isAdmin,
+                navigateToItemEdit = navigateToItemEdit,
+                deleteItem = deleteItem,
                 modifier = Modifier
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             )
@@ -179,7 +208,10 @@ fun HomeItemCard(
     navigateToItemDetails: (Int) -> Unit,
     addItemToCart: (Item) -> Unit,
     item: Item,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isAdmin: Boolean = false,
+    navigateToItemEdit: (Int) -> Unit = {},
+    deleteItem: (Item) -> Unit = {},
 ) {
     OutlinedCard(
         modifier = modifier
@@ -209,11 +241,15 @@ fun HomeItemCard(
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
                     Text(
                         text = item.name,
                         style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = "$${item.price}",
@@ -224,7 +260,9 @@ fun HomeItemCard(
                     Text(
                         text = item.description,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     val itemsLeftText = if (item.quantity == 0) stringResource(R.string.no_items_in_stock)
                                         else "${item.quantity} left"
@@ -235,27 +273,62 @@ fun HomeItemCard(
                     )
                 }
 
-                Spacer(Modifier.weight(1f))
+                // Spacer(Modifier.weight(1f))
 
-                OutlinedButton(
-                    onClick = { addItemToCart(item) },
-                    shape = MaterialTheme.shapes.small,
-                    modifier = Modifier
-                        .size(40.dp),
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.onPrimary,
-                        contentColor = MaterialTheme.colorScheme.primary
-                    ),
-                    border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
+                Row(
+                    modifier = Modifier.padding(horizontal = 2.dp)
                 ) {
-                    Icon(
+                    if(isAdmin) {
+                        AppSquareButton(
+                            onClick = { navigateToItemEdit(item.id) },
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(R.string.edit),
+                            modifier = Modifier,
+                        )
+
+                        AppSquareButton(
+                            onClick = { deleteItem(item) },
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = stringResource(R.string.delete),
+                            modifier = Modifier,
+                        )
+                    }
+
+                    AppSquareButton(
+                        onClick = { addItemToCart(item) },
                         imageVector = Icons.Default.Add,
                         contentDescription = stringResource(R.string.add),
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier,
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+fun AppSquareButton(
+    imageVector: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedButton(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.small,
+        modifier = modifier
+            .size(36.dp),
+        contentPadding = PaddingValues(0.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.onPrimary,
+            contentColor = MaterialTheme.colorScheme.primary
+        ),
+        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = contentDescription,
+            modifier = Modifier.size(18.dp)
+        )
     }
 }
