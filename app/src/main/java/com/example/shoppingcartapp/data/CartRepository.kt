@@ -24,8 +24,8 @@ class CartRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun addToCart(item: Item) {
-        if(item.quantity < 1) {
+    suspend fun addToCart(item: Item, count: Int = 1) {
+        if(item.quantity < 1 || count < 1) {
             return
         }
 
@@ -39,15 +39,40 @@ class CartRepository(private val dataStore: DataStore<Preferences>) {
             if (existingIndex >= 0) {
                 val existing = current[existingIndex]
                 if(existing.quantity < item.quantity) {
-                    current[existingIndex] = existing.copy(quantity = existing.quantity + 1)
+                    current[existingIndex] = existing.copy(quantity = existing.quantity + count)
                 }
             } else {
-                current.add(item.copy(quantity = 1))
+                current.add(item.copy(quantity = count))
             }
 
             preferences[CART_KEY] = Json.encodeToString(current)
         }
     }
+
+
+    suspend fun updateItemCount(itemId: Int, count: Int) {
+        dataStore.edit { preferences ->
+            val current = (preferences[CART_KEY] ?: "")
+                .takeIf { it.isNotEmpty() }
+                ?.let { Json.decodeFromString<List<Item>>(it) }
+                ?.toMutableList() ?: mutableListOf()
+
+            val index = current.indexOfFirst { it.id == itemId }
+
+            if (index >= 0) {
+                if (count <= 0) {
+                    // Remove item if count is zero or negative
+                    current.removeAt(index)
+                } else {
+                    val existing = current[index]
+                    current[index] = existing.copy(quantity = count)
+                }
+            }
+
+            preferences[CART_KEY] = Json.encodeToString(current)
+        }
+    }
+
 
     suspend fun removeFromCart(itemId: Int) {
         dataStore.edit { preferences ->
