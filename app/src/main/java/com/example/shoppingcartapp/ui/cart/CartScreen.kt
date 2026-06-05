@@ -245,10 +245,8 @@ fun CartItemCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    val itemsLeftText = if (item.quantity == 0) stringResource(R.string.no_items_in_stock)
-                    else "${item.quantity} left"
                     Text(
-                        text = itemsLeftText,
+                        text = "${item.quantity} in cart",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

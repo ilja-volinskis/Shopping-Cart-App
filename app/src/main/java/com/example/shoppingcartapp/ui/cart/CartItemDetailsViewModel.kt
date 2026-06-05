@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.shoppingcartapp.data.CartRepository
 import com.example.shoppingcartapp.data.ItemsRepository
 import com.example.shoppingcartapp.ui.home.ItemDetails
-import com.example.shoppingcartapp.ui.home.ItemUiState
 import com.example.shoppingcartapp.ui.home.toItemDetails
 import com.example.shoppingcartapp.ui.navigation.MainItemDetailsDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
