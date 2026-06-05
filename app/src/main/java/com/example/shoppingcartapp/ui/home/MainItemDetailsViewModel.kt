@@ -36,9 +36,9 @@ class MainItemDetailsViewModel @Inject constructor(
             initialValue = ItemUiState()
         )
 
-    fun addItemToCart(item: Item) {
+    fun addItemToCart(item: Item, count: Int = 1) {
         viewModelScope.launch {
-            cartRepository.addToCart(item)
+            cartRepository.addToCart(item, count)
         }
     }
 

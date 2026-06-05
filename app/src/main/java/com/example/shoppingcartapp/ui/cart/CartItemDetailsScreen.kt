@@ -61,12 +61,13 @@ fun CartItemDetailsScreen(
         }
     ) { innerPadding ->
         CartItemDetailsBody(
-            outOfStock = uiState.value.outOfStock,
+            actualItemQuantity = uiState.value.actualItemQuantity,
             itemDetails = uiState.value.itemDetails,
             removeFromCart = {
                 viewModel.removeItemFromCart(it)
                 navigateUp()
             },
+            setItemCountInCart = viewModel::setItemCountInCart,
             modifier = Modifier,
             contentPadding = innerPadding
         )
@@ -75,9 +76,10 @@ fun CartItemDetailsScreen(
 
 @Composable
 fun CartItemDetailsBody(
-    outOfStock: Boolean,
+    actualItemQuantity: Int,
     itemDetails: ItemDetails,
     removeFromCart: (Int) -> Unit,
+    setItemCountInCart: (Int) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
@@ -129,6 +131,7 @@ fun CartItemDetailsBody(
                 }
 
                 Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
@@ -162,7 +165,7 @@ fun CartItemDetailsBody(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if(outOfStock) {
+                        if(actualItemQuantity <= 0) {
                             Text(
                                 text = stringResource(R.string.out_of_stock),
                                 style = MaterialTheme.typography.bodyLarge,
@@ -176,13 +179,25 @@ fun CartItemDetailsBody(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = itemDetails.quantity,
+                                text = "$actualItemQuantity",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
+
+                    val quantity = if(itemDetails.quantity.isNotEmpty())
+                        itemDetails.quantity.toInt() else 1
+                    QuantityControlRow(
+                        quantity = quantity,
+                        setQuantity = {
+                            val newQuantity = clamp(1, actualItemQuantity, it)
+                            setItemCountInCart(newQuantity)
+                        },
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                    )
                 }
 
                 AppButton(
@@ -193,4 +208,10 @@ fun CartItemDetailsBody(
             }
         }
     }
+}
+
+fun clamp(min: Int, max: Int, value: Int): Int {
+    if(value < min) return min
+    if(value > max) return max
+    return value
 }

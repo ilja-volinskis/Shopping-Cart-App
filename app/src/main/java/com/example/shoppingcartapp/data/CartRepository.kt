@@ -24,8 +24,8 @@ class CartRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun addToCart(item: Item) {
-        if(item.quantity < 1) {
+    suspend fun addToCart(item: Item, count: Int = 1) {
+        if(item.quantity < 1 || count < 1) {
             return
         }
 
@@ -39,10 +39,10 @@ class CartRepository(private val dataStore: DataStore<Preferences>) {
             if (existingIndex >= 0) {
                 val existing = current[existingIndex]
                 if(existing.quantity < item.quantity) {
-                    current[existingIndex] = existing.copy(quantity = existing.quantity + 1)
+                    current[existingIndex] = existing.copy(quantity = existing.quantity + count)
                 }
             } else {
-                current.add(item.copy(quantity = 1))
+                current.add(item.copy(quantity = count))
             }
 
             preferences[CART_KEY] = Json.encodeToString(current)

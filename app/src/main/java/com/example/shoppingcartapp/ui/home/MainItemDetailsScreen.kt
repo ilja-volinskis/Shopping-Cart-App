@@ -21,6 +21,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.shoppingcartapp.CartAppTopBar
 import com.example.shoppingcartapp.R
 import com.example.shoppingcartapp.data.Item
+import com.example.shoppingcartapp.ui.cart.QuantityControlRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,7 +76,7 @@ fun MainItemDetailsScreen(
 fun MainItemDetailsBody(
     outOfStock: Boolean,
     itemDetails: ItemDetails,
-    addToCart: (Item) -> Unit,
+    addToCart: (Item, Int) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
@@ -102,6 +105,7 @@ fun MainItemDetailsBody(
                 horizontalAlignment = Alignment.Start
             ) {
 
+                val quantity = remember { mutableIntStateOf(1) }
                 // Description
                 OutlinedCard(
                     modifier = Modifier
@@ -125,6 +129,7 @@ fun MainItemDetailsBody(
                 }
 
                 Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
@@ -179,11 +184,18 @@ fun MainItemDetailsBody(
                             )
                         }
                     }
+
+                    QuantityControlRow(
+                        quantity = quantity.intValue,
+                        setQuantity = { quantity.intValue = if(it >= 1) it else 1 },
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                    )
                 }
 
                 AppButton(
                     text = stringResource(R.string.add_to_cart),
-                    onClick = { addToCart(itemDetails.toItem()) },
+                    onClick = { addToCart(itemDetails.toItem(), quantity.intValue) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
