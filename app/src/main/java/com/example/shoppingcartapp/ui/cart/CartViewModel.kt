@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,6 +56,32 @@ class CartViewModel @Inject constructor(
             cartRepository.clearCart()
         }
     }
+
+    fun buildCartContentsJson(): String {
+        val payload = SharePayload(
+            items = uiState.value.cartItems
+                .map { ItemNoId(it.name, it.description, it.price, it.quantity) },
+            totalPrice = uiState.value.totalPrice
+        )
+        val json = Json.encodeToString(payload)
+
+        return json
+    }
+
+    @Serializable
+    private data class ItemNoId(
+        val name: String,
+        val description: String,
+        val price: Double,
+        val quantity: Int
+    )
+    @Serializable
+    private data class SharePayload(
+        val items: List<ItemNoId>,
+        val totalPrice: Double
+    )
+
+
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L

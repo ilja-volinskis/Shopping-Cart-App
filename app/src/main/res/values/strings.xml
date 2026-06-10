@@ -25,4 +25,6 @@
     <string name="description">Description</string>
     <string name="decrease">Decrease</string>
     <string name="increase">Increase</string>
+    <string name="share">Share</string>
+    <string name="share_cart">Share cart</string>
 </resources>

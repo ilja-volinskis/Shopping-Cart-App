@@ -1,5 +1,6 @@
 package com.example.shoppingcartapp.ui.cart
 
+import android.content.Intent
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
@@ -42,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.PlatformTextStyle
@@ -56,6 +58,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.shoppingcartapp.CartAppTopBar
 import com.example.shoppingcartapp.R
 import com.example.shoppingcartapp.data.Item
+import com.example.shoppingcartapp.ui.home.AppButton
 import com.example.shoppingcartapp.ui.home.AppSquareButton
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,6 +80,9 @@ fun CartScreen(
 
     Log.d("Cart", "${cartUiState.value.cartItems}")
 
+    val context = LocalContext.current
+    val cartJson = viewModel.buildCartContentsJson()
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -88,10 +94,18 @@ fun CartScreen(
             )
         }
     ) { innerPadding ->
+        val shareText = stringResource(R.string.share_cart)
         CartBody(
             navigateToItemDetails = navigateToItemDetails,
             setItemCount = { itemId: Int, count: Int ->
                 viewModel.setItemCount(itemId, count)
+            },
+            shareCartContents = {
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/json"
+                    putExtra(Intent.EXTRA_TEXT, cartJson)
+                }
+                context.startActivity(Intent.createChooser(intent, shareText))
             },
             totalPrice = cartUiState.value.totalPrice,
             items = cartUiState.value.cartItems,
@@ -105,6 +119,7 @@ fun CartScreen(
 fun CartBody(
     navigateToItemDetails: (Int) -> Unit,
     setItemCount: (Int, Int) -> Unit,
+    shareCartContents: () -> Unit,
     totalPrice: Double,
     items: List<Item>,
     modifier: Modifier = Modifier,
@@ -122,13 +137,28 @@ fun CartBody(
                 .fillMaxSize()
         )
 
-        TotalPriceDisplay(
-            totalPrice = totalPrice,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .align(Alignment.BottomCenter)
                 .padding(start = 20.dp, bottom = 32.dp, end = 20.dp)
                 .fillMaxWidth()
-        )
+                .align(Alignment.BottomCenter)
+        ) {
+            TotalPriceDisplay(
+                totalPrice = totalPrice,
+                modifier = Modifier
+                    .padding(bottom = 12.dp)
+                    .fillMaxWidth()
+            )
+
+            AppButton(
+                text = stringResource(R.string.share),
+                onClick = { shareCartContents() },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
+
     }
 }
 
