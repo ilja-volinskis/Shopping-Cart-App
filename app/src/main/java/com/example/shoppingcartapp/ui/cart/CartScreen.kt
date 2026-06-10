@@ -94,6 +94,7 @@ fun CartScreen(
             )
         }
     ) { innerPadding ->
+        val shareText = stringResource(R.string.share_cart)
         CartBody(
             navigateToItemDetails = navigateToItemDetails,
             setItemCount = { itemId: Int, count: Int ->
@@ -104,8 +105,7 @@ fun CartScreen(
                     type = "text/json"
                     putExtra(Intent.EXTRA_TEXT, cartJson)
                 }
-                context.startActivity(Intent.createChooser(intent,
-                    context.getString(R.string.share_cart)))
+                context.startActivity(Intent.createChooser(intent, shareText))
             },
             totalPrice = cartUiState.value.totalPrice,
             items = cartUiState.value.cartItems,
