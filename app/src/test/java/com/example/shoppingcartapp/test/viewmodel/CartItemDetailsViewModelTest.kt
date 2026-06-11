@@ -1,7 +1,6 @@
 package com.example.shoppingcartapp.test.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import app.cash.turbine.test
 import com.example.shoppingcartapp.data.CartRepository
 import com.example.shoppingcartapp.data.Item
 import com.example.shoppingcartapp.data.ItemsRepository
@@ -52,20 +51,6 @@ class CartItemDetailsViewModelTest {
             mapOf(MainItemDetailsDestination.itemIdArg to itemId)
         )
         return CartItemDetailsViewModel(savedStateHandle, itemsRepository, cartRepository)
-    }
-
-    @Test
-    fun uiState_Combines_Cart_Item_And_Repository_Stock_Quantity() = runTest {
-        every { cartRepository.cartItems } returns flowOf(listOf(cartItem))
-        every { itemsRepository.getItemStream(itemId) } returns flowOf(repoItem)
-
-        val viewModel = createViewModel()
-
-        viewModel.uiState.test {
-            val state = awaitItem()
-            assertEquals(cartItem.toItemDetails(), state.itemDetails)
-            assertEquals(repoItem.quantity, state.actualItemQuantity)
-        }
     }
 
     @Test

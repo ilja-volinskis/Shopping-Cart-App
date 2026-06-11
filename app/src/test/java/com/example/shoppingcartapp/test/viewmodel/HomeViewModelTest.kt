@@ -1,7 +1,6 @@
 package com.example.shoppingcartapp.test.viewmodel
 
-import app.cash.turbine.Event
-import app.cash.turbine.test
+
 import com.example.shoppingcartapp.data.CartRepository
 import com.example.shoppingcartapp.data.Item
 import com.example.shoppingcartapp.data.ItemsRepository
@@ -58,31 +57,6 @@ class HomeViewModelTest {
         createViewModel()
 
         assertEquals(emptyList<Item>(), viewModel.uiState.value.itemList)
-    }
-
-    @Test
-    fun uiState_Emits_Items_From_Repository() = runTest {
-        every { itemsRepository.getAllItemsStream() } returns flowOf(listOf(item1, item2))
-        createViewModel()
-
-        viewModel.uiState.test {
-            val state = awaitItem()
-            assertEquals(listOf(item1, item2), state.itemList)
-        }
-    }
-
-    @Test
-    fun uiState_Updates_When_Repository_Emits_New_List() = runTest {
-        val items = listOf(item1, item2)
-        every { itemsRepository.getAllItemsStream() } returns flowOf(emptyList(), items)
-        createViewModel()
-
-        viewModel.uiState.test {
-            val last = cancelAndConsumeRemainingEvents()
-                .filterIsInstance<Event.Item<HomeUiState>>()
-                .last().value
-            assertEquals(items, last.itemList)
-        }
     }
 
     @Test

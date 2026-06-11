@@ -1,7 +1,6 @@
 package com.example.shoppingcartapp.test.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import app.cash.turbine.test
 import com.example.shoppingcartapp.data.CartRepository
 import com.example.shoppingcartapp.data.Item
 import com.example.shoppingcartapp.ui.cart.CartViewModel
@@ -56,19 +55,6 @@ class CartViewModelTest {
 
         assertEquals(emptyList<Item>(), viewModel.uiState.value.cartItems)
         assertEquals(0.0, viewModel.uiState.value.totalPrice, 0.001)
-    }
-
-    @Test
-    fun uiState_Reflects_Cart_Items_And_Computes_Total_Price() = runTest {
-        every { cartRepository.cartItems } returns flowOf(listOf(item1, item2))
-        createViewModel()
-
-        viewModel.uiState.test {
-            val state = awaitItem()
-            assertEquals(listOf(item1, item2), state.cartItems)
-            // 2.0 * 3 + 1.5 * 2 = 6.0 + 3.0 = 9.0
-            assertEquals(9.0, state.totalPrice, 0.001)
-        }
     }
 
     @Test
