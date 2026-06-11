@@ -5,7 +5,6 @@ import com.example.shoppingcartapp.data.CartRepository
 import com.example.shoppingcartapp.data.Item
 import com.example.shoppingcartapp.data.ItemsRepository
 import com.example.shoppingcartapp.ui.cart.CartItemDetailsViewModel
-import com.example.shoppingcartapp.ui.home.toItemDetails
 import com.example.shoppingcartapp.ui.navigation.MainItemDetailsDestination
 import io.mockk.coVerify
 import io.mockk.every
@@ -18,7 +17,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 

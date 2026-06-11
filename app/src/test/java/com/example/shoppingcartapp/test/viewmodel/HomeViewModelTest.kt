@@ -4,7 +4,6 @@ package com.example.shoppingcartapp.test.viewmodel
 import com.example.shoppingcartapp.data.CartRepository
 import com.example.shoppingcartapp.data.Item
 import com.example.shoppingcartapp.data.ItemsRepository
-import com.example.shoppingcartapp.ui.home.HomeUiState
 import com.example.shoppingcartapp.ui.home.HomeViewModel
 import io.mockk.coVerify
 import io.mockk.every
@@ -20,7 +19,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import kotlin.collections.emptyList
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
