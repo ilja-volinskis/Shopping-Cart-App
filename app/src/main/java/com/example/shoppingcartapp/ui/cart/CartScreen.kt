@@ -1,0 +1,378 @@
+package com.example.shoppingcartapp.ui.cart
+
+import android.content.Intent
+import android.util.Log
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.shoppingcartapp.CartAppTopBar
+import com.example.shoppingcartapp.R
+import com.example.shoppingcartapp.data.Item
+import com.example.shoppingcartapp.ui.home.AppButton
+import com.example.shoppingcartapp.ui.home.AppSquareButton
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CartScreen(
+    navigateToItemDetails: (Int) -> Unit,
+    navigateBack: () -> Unit,
+    navigateUp: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: CartViewModel = hiltViewModel()
+) {
+    BackHandler {
+        navigateBack()
+    }
+
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    val cartUiState = viewModel.uiState.collectAsStateWithLifecycle()
+
+    Log.d("Cart", "${cartUiState.value.cartItems}")
+
+    val context = LocalContext.current
+    val cartJson = viewModel.buildCartContentsJson()
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CartAppTopBar(
+                title = stringResource(R.string.cart),
+                navigateUp = navigateUp,
+                scrollBehavior = scrollBehavior,
+                canNavigateBack = true
+            )
+        }
+    ) { innerPadding ->
+        val shareText = stringResource(R.string.share_cart)
+        CartBody(
+            navigateToItemDetails = navigateToItemDetails,
+            setItemCount = { itemId: Int, count: Int ->
+                viewModel.setItemCount(itemId, count)
+            },
+            shareCartContents = {
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/json"
+                    putExtra(Intent.EXTRA_TEXT, cartJson)
+                }
+                context.startActivity(Intent.createChooser(intent, shareText))
+            },
+            totalPrice = cartUiState.value.totalPrice,
+            items = cartUiState.value.cartItems,
+            modifier = Modifier,
+            contentPadding = innerPadding
+        )
+    }
+}
+
+@Composable
+fun CartBody(
+    navigateToItemDetails: (Int) -> Unit,
+    setItemCount: (Int, Int) -> Unit,
+    shareCartContents: () -> Unit,
+    totalPrice: Double,
+    items: List<Item>,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp)
+) {
+    Box(
+        modifier = modifier
+            .padding(contentPadding)
+    ) {
+        CartItemList(
+            navigateToItemDetails = navigateToItemDetails,
+            setItemCount = setItemCount,
+            items = items,
+            modifier = Modifier
+                .fillMaxSize()
+        )
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(start = 20.dp, bottom = 32.dp, end = 20.dp)
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+        ) {
+            TotalPriceDisplay(
+                totalPrice = totalPrice,
+                modifier = Modifier
+                    .padding(bottom = 12.dp)
+                    .fillMaxWidth()
+            )
+
+            AppButton(
+                text = stringResource(R.string.share),
+                onClick = { shareCartContents() },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
+
+    }
+}
+
+@Composable
+fun TotalPriceDisplay(
+    totalPrice: Double,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .width(200.dp)
+            .background(
+                color = MaterialTheme.colorScheme.primary,
+                shape = MaterialTheme.shapes.medium
+            )
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.onPrimary,
+                shape = MaterialTheme.shapes.medium
+            )
+            .padding(12.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = String.format("Total: $%.2f", totalPrice),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun CartItemList(
+    navigateToItemDetails: (Int) -> Unit,
+    setItemCount: (Int, Int) -> Unit,
+    items: List<Item>,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp)
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(1),
+        contentPadding = contentPadding,
+        modifier = modifier
+    ) {
+        items(items = items, key = { it.id }) { item ->
+            CartItemCard(
+                navigateToItemDetails = navigateToItemDetails,
+                setItemCount = setItemCount,
+                item = item,
+                modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun CartItemCard(
+    navigateToItemDetails: (Int) -> Unit,
+    setItemCount: (Int, Int) -> Unit,
+    item: Item,
+    modifier: Modifier = Modifier
+) {
+    OutlinedCard(
+        modifier = modifier
+            .height(120.dp)
+            .fillMaxWidth(),
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.onSurface)
+    ) {
+        Row (
+            modifier = Modifier
+                .fillMaxHeight()
+                .clickable { navigateToItemDetails(item.id) },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_broken_image),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.weight(1f)
+            )
+            Row(
+                modifier = Modifier
+                    .weight(2.5f)
+                    .padding(start = 4.dp, top = 4.dp, bottom = 4.dp, end = 8.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = item.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = "$${item.price}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = item.description,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = "${item.quantity} in cart",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                QuantityControlRow(
+                    quantity = item.quantity,
+                    setQuantity = { setItemCount(item.id, it) },
+                    modifier = Modifier
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun QuantityControlRow(
+    quantity: Int,
+    setQuantity: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.wrapContentWidth()
+    ) {
+        AppSquareButton(
+            onClick = { setQuantity(quantity - 1) },
+            imageVector = Icons.Default.Remove,
+            contentDescription = stringResource(R.string.decrease),
+            modifier = Modifier,
+        )
+
+        QuantityInputField(
+            value = quantity.toString(),
+            onValueChange = { newValue ->
+                if(newValue.isEmpty()) {
+                    setQuantity(1)
+                } else if (newValue.all { it.isDigit() }) {
+                    setQuantity(newValue.toInt())
+                }
+            },
+            modifier = Modifier
+        )
+
+        AppSquareButton(
+            onClick = { setQuantity(quantity + 1) },
+            imageVector = Icons.Default.Add,
+            contentDescription = stringResource(R.string.increase),
+            modifier = Modifier,
+        )
+    }
+}
+
+@Composable
+fun QuantityInputField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val visualTransformation = VisualTransformation.None
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        singleLine = true,
+        textStyle = LocalTextStyle.current.copy(
+            fontSize = 14.sp,
+            lineHeight = 16.sp,
+            textAlign = TextAlign.Center,
+            platformStyle = PlatformTextStyle(
+                includeFontPadding = false
+            )
+        ),
+        modifier = modifier
+            .width(48.dp)
+            .height(36.dp)
+            .padding(0.dp),
+        interactionSource = interactionSource,
+        visualTransformation = visualTransformation
+    ) { innerTextField ->
+        OutlinedTextFieldDefaults.DecorationBox(
+            value = value,
+            innerTextField = innerTextField,
+            interactionSource = interactionSource,
+            enabled = true,
+            singleLine = true,
+            visualTransformation = visualTransformation,
+            contentPadding = PaddingValues(0.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+            )
+        )
+    }
+}
